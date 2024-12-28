@@ -570,6 +570,30 @@ video {
   height: 35px;
 }
 
+.h-\[screen\] {
+  height: screen;
+}
+
+.h-\[calc\(\)\] {
+  height: calc();
+}
+
+.h-\[calc\(100\)\] {
+  height: calc(100);
+}
+
+.h-\[calc\(100\%\)\] {
+  height: calc(100%);
+}
+
+.h-\[calc\(100\%-24px\)\] {
+  height: calc(100% - 24px);
+}
+
+.h-\[calc\(100\%-23px\)\] {
+  height: calc(100% - 23px);
+}
+
 .w-\[75vh\] {
   width: 75vh;
 }

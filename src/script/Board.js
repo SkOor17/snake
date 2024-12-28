@@ -1,3 +1,5 @@
+import { Snake } from "./Snake.js";
+
 export class Board {
 
     constructor(nbTileX, nbTileY) {
@@ -6,7 +8,6 @@ export class Board {
 
         // 0: case vide, 1: serpent, 2: objet
         this._boardList = [];
-
         for (let i = 0; i < nbTileY; i++) {
             const row = [];
             for (let j = 0; j < nbTileX; j++) {
@@ -14,6 +15,12 @@ export class Board {
             }
             this._boardList.push(row);
         }
+
+        this._snake = new Snake(this);
+    }
+
+    getBoard() {
+        return this._boardList
     }
 
     drawBoard() {
@@ -24,7 +31,7 @@ export class Board {
         
         const widthCase = widthBoard/this._nbTileX;
         const heightCase = heightBoard/this._nbTileY;
-                 
+        
         for (let y = 0; y < this._nbTileY; y++) {
             const row = document.createElement("div");
             row.classList = `w-full flex`;
@@ -35,16 +42,44 @@ export class Board {
                 const node = document.createElement("div");
                 node.style.height = `${heightCase}px`;
                 node.style.width = `${widthCase}px`;
+                node.id = `caseX${x}Y${y}`
+                row.appendChild(node);
 
-                // case vide
-                if (this._boardList[y][x]===0) {
-                    const color = (x+y)%2==0 ? "bg-green-400" : "bg-green-500";
-                    node.classList = `${color}`;
+                switch (this._boardList[y][x]) {
+                    case 0:
+                        this.drawEmptyCase(x,y)
+                        break;
+                
+                    default:
+                        node.style.backgroundColor = "black"
+                        break;
                 }
 
-                row.appendChild(node);
             }
         }
-
     }
+
+    drawEmptyCase(x,y) {
+        const node = document.getElementById(`caseX${x}Y${y}`)
+        const color = (x+y)%2==0 ? "#4ade80" : "#22c55e";
+        node.style.backgroundColor = `${color}`;
+    }
+
+    addObject(x,y) {
+        this._boardList[y][x] = 2
+        this.drawObject(x,y)
+    }
+
+    removeObject(x,y) {
+        if (this._boardList[y][x]!==2) throw Error
+
+        this._boardList[y][x] = 1
+        this.drawObject(x,y)
+    }
+
+    drawObject(x,y) {
+        const node = document.getElementById(`caseX${x}Y${y}`)
+        node.style.backgroundColor = "black"
+    }
+
 }
