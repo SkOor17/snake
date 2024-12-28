@@ -6,6 +6,7 @@ export class Snake {
         this._snakeBody = [
             { x: 2, y: 2 },
             { x: 1, y: 2 },
+            { x: 0, y: 2 },
         ];
         this._nextLast = { x: 2, y: 2 }; 
         this._prevHead = { x: 2, y: 2 };
@@ -15,6 +16,7 @@ export class Snake {
 
         this._boardList[this._snakeBody[0]["y"]][this._snakeBody[0]["x"]] = 1;
         this._boardList[this._snakeBody[1]["y"]][this._snakeBody[1]["x"]] = 1;
+        this._boardList[this._snakeBody[2]["y"]][this._snakeBody[2]["x"]] = 1;
         this.deplacer();
     }
 
@@ -23,15 +25,11 @@ export class Snake {
     }
 
     updateSnakeBody() {
-        console.log(this._prevHead);
-        this._snakeBody[1] = this._prevHead
-        this._prevHead = this._snakeBody[0]
-        console.log(this._prevHead);
-        
-
-        for (let i = 2; i < this._snakeBody.length; i++) {
+        for (let i = this._snakeBody.length-1; i > 0; i--) {
             this._snakeBody[i] = this._snakeBody[i-1]
         }
+
+        this._snakeBody[1] = this._prevHead        
     }
 
     deplacer() {
@@ -65,13 +63,17 @@ export class Snake {
     drawSnake() {
         for (let i = 0; i < this._snakeBody.length; i++) {
             const el = this._snakeBody[i]
+            this._boardList[el["y"]][el["x"]] = 1
             const elementCase = document.getElementById(`caseX${el["x"]}Y${el["y"]}`)
             elementCase.style.backgroundColor = "black"
         }
+        console.log(this._boardList);
+        
     }
 
     ereaseQueue() {
-        const queue = this.getQueue()
+        const queue = this.getQueue()        
         this._board.drawEmptyCase(queue["x"],queue["y"])
+        this._boardList[queue["y"]][queue["x"]] = 0
     }
 }
