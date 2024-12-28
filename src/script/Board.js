@@ -79,7 +79,7 @@ export class Board {
 
     drawObject(x,y) {
         const node = document.getElementById(`caseX${x}Y${y}`)
-        node.style.backgroundColor = "black"
+        node.style.backgroundColor = "red"
     }
 
 }
