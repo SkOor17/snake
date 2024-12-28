@@ -24,40 +24,53 @@ export class Snake {
         return this._snakeBody[this._snakeBody.length-1]
     }
 
-    updateSnakeBody() {
-        for (let i = this._snakeBody.length-1; i > 0; i--) {
-            this._snakeBody[i] = this._snakeBody[i-1]
-        }
-
-        this._snakeBody[1] = this._prevHead        
-    }
-
     deplacer() {
         document.addEventListener(("keyup"), (event) => {
             this._prevHead = { ...this._snakeBody[0] };
             
             switch (event.key) {
                 case "ArrowUp":
-                    this._snakeBody[0]["y"] -= 1 
+                    if (this.canMove(this._snakeBody[0]["x"], this._snakeBody[0]["y"]-1)) {
+                        this._snakeBody[0]["y"] -= 1 
+                        this.ereaseQueue()
+                        this.updateSnakeBody();
+                        this.drawSnake();
+                    }
                     break;
                 case "ArrowDown":
-                    this._snakeBody[0]["y"] += 1 
+                    if (this.canMove(this._snakeBody[0]["x"], this._snakeBody[0]["y"]+1)) {
+                        this._snakeBody[0]["y"] += 1 
+                        this.ereaseQueue()
+                        this.updateSnakeBody();
+                        this.drawSnake();
+                    }
                     break;
                 case "ArrowLeft":
-                    this._snakeBody[0]["x"] -= 1 
+                    if (this.canMove(this._snakeBody[0]["x"]-1, this._snakeBody[0]["y"])) {
+                        this._snakeBody[0]["x"] -= 1 
+                        this.ereaseQueue()
+                        this.updateSnakeBody();
+                        this.drawSnake();
+                    }
                     break;
                 case "ArrowRight":
-                    this._snakeBody[0]["x"] += 1 
-                    break;
-            
-                default:
+                    if (this.canMove(this._snakeBody[0]["x"]+1, this._snakeBody[0]["y"])) {
+                        this._snakeBody[0]["x"] += 1 
+                        this.ereaseQueue()
+                        this.updateSnakeBody();
+                        this.drawSnake();
+                    }
                     break;
             }
-
-            this.ereaseQueue()
-            this.updateSnakeBody();
-            this.drawSnake();
         })
+    }
+
+    updateSnakeBody() {
+        for (let i = this._snakeBody.length-1; i > 0; i--) {
+            this._snakeBody[i] = this._snakeBody[i-1]
+        }
+
+        this._snakeBody[1] = this._prevHead        
     }
 
     drawSnake() {
@@ -75,5 +88,9 @@ export class Snake {
         const queue = this.getQueue()        
         this._board.drawEmptyCase(queue["x"],queue["y"])
         this._boardList[queue["y"]][queue["x"]] = 0
+    }
+
+    canMove(x,y) {
+        return x>=0 && x<=19 && y>=0 && y<=19
     }
 }
