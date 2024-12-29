@@ -1,5 +1,3 @@
-import { Board } from "./Board.js";
-
 export class Snake {
 
     constructor(board) {
@@ -17,14 +15,32 @@ export class Snake {
         this._boardList[this._snakeBody[0]["y"]][this._snakeBody[0]["x"]] = 1;
         this._boardList[this._snakeBody[1]["y"]][this._snakeBody[1]["x"]] = 1;
         this._boardList[this._snakeBody[2]["y"]][this._snakeBody[2]["x"]] = 1;
-        this.deplacer();
+        this.drawSnake();
+        this.handleMovement();
     }
 
     getQueue() {        
         return this._snakeBody[this._snakeBody.length-1]
     }
 
-    deplacer() {
+    moveSnake(dx, dy) {
+        if (this.canMove(this._snakeBody[0].x + dx, this._snakeBody[0].y + dy)) {
+            
+            const hasObj = this.hasObject(this._snakeBody[0].x + dx, this._snakeBody[0].y + dy)
+            console.log(hasObj);
+            if (!hasObj) this.ereaseQueue();
+            
+            this._snakeBody[0].x += dx;
+            this._snakeBody[0].y += dy;
+
+            this.updateSnakeBody();
+            this.drawSnake();
+
+            if (hasObj) this._board.addObject()
+        }
+    }
+
+    handleMovement() {
         document.addEventListener(("keyup"), (event) => {
             this._prevHead = { ...this._snakeBody[0] };
             const x = this._snakeBody[0]["x"]
@@ -32,41 +48,19 @@ export class Snake {
             
             switch (event.key) {
                 case "ArrowUp":
-                    if (this.canMove(x, y-1)) {
-                        if (!this.hasObject(x,y-1)) this.ereaseQueue()
-                        this._snakeBody[0]["y"] -= 1 
-                        this.updateSnakeBody();
-                        this.drawSnake();
-                    }
+                    this.moveSnake(0,-1)
                     break;
                 case "ArrowDown":
-                    if (this.canMove(x, y+1)) {
-                        if (!this.hasObject(x,y+1)) this.ereaseQueue()
-                        this._snakeBody[0]["y"] += 1 
-                        this.updateSnakeBody();
-                        this.drawSnake();
-                    }
+                    this.moveSnake(0,1)
                     break;
                 case "ArrowLeft":
-                    if (this.canMove(x-1, y)) {
-                        if (!this.hasObject(x-1,y)) this.ereaseQueue()
-                        this._snakeBody[0]["x"] -= 1 
-                        this.updateSnakeBody();
-                        this.drawSnake();
-                    }
+                    this.moveSnake(-1,0)
                     break;
                 case "ArrowRight":
-                    if (this.canMove(x+1, y)) {
-                        if (!this.hasObject(x+1,y)) this.ereaseQueue()
-                        this._snakeBody[0]["x"] += 1 
-                        this.updateSnakeBody();
-                        this.drawSnake();
-                    }
+                    this.moveSnake(1,0)
                     break;
             }
 
-            console.log(this._snakeBody);
-            
         })
     }
 
@@ -85,8 +79,6 @@ export class Snake {
             const elementCase = document.getElementById(`caseX${el["x"]}Y${el["y"]}`)
             elementCase.style.backgroundColor = "black"
         }
-        console.log(this._boardList);
-        
     }
 
     ereaseQueue() {
@@ -96,7 +88,7 @@ export class Snake {
     }
 
     canMove(x,y) {
-        return x>=0 && x<=19 && y>=0 && y<=19 && this._boardList[y][x]!==1
+        return x>=0 && x<=this._board._nbTileX-1 && y>=0 && y<=this._board._nbTileY-1 && this._boardList[y][x]!==1
     }
 
     hasObject(x,y) {

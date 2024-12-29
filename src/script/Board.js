@@ -5,6 +5,7 @@ export class Board {
     constructor(nbTileX, nbTileY) {
         this._nbTileX = nbTileX;
         this._nbTileY = nbTileY;
+        this.drawBoard();
 
         // 0: case vide, 1: serpent, 2: objet
         this._boardList = [];
@@ -44,17 +45,7 @@ export class Board {
                 node.style.width = `${widthCase}px`;
                 node.id = `caseX${x}Y${y}`
                 row.appendChild(node);
-
-                switch (this._boardList[y][x]) {
-                    case 0:
-                        this.drawEmptyCase(x,y)
-                        break;
-                
-                    default:
-                        node.style.backgroundColor = "black"
-                        break;
-                }
-
+                this.drawEmptyCase(x,y)
             }
         }
     }
@@ -65,15 +56,16 @@ export class Board {
         node.style.backgroundColor = `${color}`;
     }
 
-    addObject(x,y) {
+    addObject() {
+        let x = getRandomInt(0,this._nbTileX-1)
+        let y = getRandomInt(0,this._nbTileX-1)
+
+        while (this._boardList[y][x]===1) {
+            x = getRandomInt(0,this._nbTileX-1)
+            y = getRandomInt(0,this._nbTileX-1)
+        }
+
         this._boardList[y][x] = 2
-        this.drawObject(x,y)
-    }
-
-    removeObject(x,y) {
-        if (this._boardList[y][x]!==2) throw Error
-
-        this._boardList[y][x] = 1
         this.drawObject(x,y)
     }
 
@@ -82,4 +74,10 @@ export class Board {
         node.style.backgroundColor = "red"
     }
 
+}
+
+function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
 }
