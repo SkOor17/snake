@@ -1,20 +1,17 @@
 export class Snake {
 
     constructor(board) {
+        this._memoryKey = "ArrowRight"
         this._snakeBody = [
             { x: 2, y: 2 },
             { x: 1, y: 2 },
             { x: 0, y: 2 },
         ];
-        this._nextLast = { x: 2, y: 2 }; 
         this._prevHead = { x: 2, y: 2 };
 
         this._board = board;
         this._boardList = board.getBoard();
 
-        this._boardList[this._snakeBody[0]["y"]][this._snakeBody[0]["x"]] = 1;
-        this._boardList[this._snakeBody[1]["y"]][this._snakeBody[1]["x"]] = 1;
-        this._boardList[this._snakeBody[2]["y"]][this._snakeBody[2]["x"]] = 1;
         this.drawSnake();
     }
 
@@ -23,43 +20,63 @@ export class Snake {
     }
 
     moveSnake(dx, dy) {
-        if (this.canMove(this._snakeBody[0].x + dx, this._snakeBody[0].y + dy)) {
-            
-            const hasObj = this.hasObject(this._snakeBody[0].x + dx, this._snakeBody[0].y + dy)
-            console.log(hasObj);
-            if (!hasObj) this.ereaseQueue();
-            
-            this._snakeBody[0].x += dx;
-            this._snakeBody[0].y += dy;
 
-            this.updateSnakeBody();
-            this.drawSnake();
-
-            if (hasObj) this._board.addObject()
+        if (!this.canMove(this._snakeBody[0].x + dx, this._snakeBody[0].y + dy)) {
+            this.gameOver();
+            return;
         }
+
+        this._prevHead = { ...this._snakeBody[0] };
+
+        const hasObj = this.hasObject(this._snakeBody[0].x + dx, this._snakeBody[0].y + dy)
+        if (!hasObj) this.ereaseQueue();
+        
+        this._snakeBody[0].x += dx;
+        this._snakeBody[0].y += dy;
+
+        this.updateSnakeBody();
+        this.drawSnake();
+
+        if (hasObj) this._board.addObject()
+    }
+
+    autoMove() {
+        const interval = setInterval(() => {
+            if (!this._board._game._isPlaying) {
+                clearInterval(interval);
+                return;
+            }
+
+            switch (this._memoryKey) {
+                case "ArrowUp":
+                    this.moveSnake(0, -1);
+                    break;
+                case "ArrowDown":
+                    this.moveSnake(0, 1);
+                    break;
+                case "ArrowLeft":
+                    this.moveSnake(-1, 0);
+                    break;
+                case "ArrowRight":
+                    this.moveSnake(1, 0);
+                    break;
+            }
+        }, 150)
     }
 
     handleMovement() {        
-        console.log(this._board._game._isPlaying);
-        
         if (this._board._game._isPlaying) {
             document.addEventListener(("keyup"), (event) => {
-                this._prevHead = { ...this._snakeBody[0] };
-                
-                switch (event.key) {
-                    case "ArrowUp":
-                        this.moveSnake(0,-1)
-                        break;
-                    case "ArrowDown":
-                        this.moveSnake(0,1)
-                        break;
-                    case "ArrowLeft":
-                        this.moveSnake(-1,0)
-                        break;
-                    case "ArrowRight":
-                        this.moveSnake(1,0)
-                        break;
-                }
+            const validKeys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"];
+            if (validKeys.includes(event.key)) {
+                if (
+                    (event.key === "ArrowUp" && this._memoryKey === "ArrowDown") ||
+                    (event.key === "ArrowDown" && this._memoryKey === "ArrowUp") ||
+                    (event.key === "ArrowLeft" && this._memoryKey === "ArrowRight") ||
+                    (event.key === "ArrowRight" && this._memoryKey === "ArrowLeft")
+                ) return;
+                this._memoryKey = event.key;
+            }
             })
         }
     }
@@ -96,5 +113,33 @@ export class Snake {
         
         this._snakeBody.push({...this._boardList[y][x]})
         return true
+    }
+
+    gameOver() {
+        const title = document.getElementById("title");
+        const gameBoard = document.getElementById("game-board");
+        const playBtn = document.getElementById("play-btn");
+
+        title.textContent = "Game over !";
+        gameBoard.style.opacity = 0.5;
+        playBtn.style.visibility = "visible";
+        playBtn.textContent = "replay";
+
+        this._board._game._isPlaying = false;
+        this._board.reset();
+        this.reset();
+    }
+
+    reset() {
+        this._memoryKey = "ArrowRight"
+        this._snakeBody = [
+            { x: 2, y: 2 },
+            { x: 1, y: 2 },
+            { x: 0, y: 2 },
+        ];
+        this._prevHead = { x: 2, y: 2 };
+        this._boardList = this._board.getBoard();
+
+        this.drawSnake();
     }
 }

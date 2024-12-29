@@ -6,9 +6,8 @@ export class Board {
     constructor(nbTileX, nbTileY) {
         this._nbTileX = nbTileX;
         this._nbTileY = nbTileY;
-        this.drawBoard();
+        this.init();
 
-        // 0: case vide, 1: serpent, 2: objet
         this._boardList = [];
         for (let i = 0; i < nbTileY; i++) {
             const row = [];
@@ -26,7 +25,7 @@ export class Board {
         return this._boardList
     }
 
-    drawBoard() {
+    init() {
         const gameBoard = document.getElementById("game-board")
         
         const widthBoard = gameBoard.offsetWidth;
@@ -47,6 +46,14 @@ export class Board {
                 node.style.width = `${widthCase}px`;
                 node.id = `caseX${x}Y${y}`
                 row.appendChild(node);
+                this.drawEmptyCase(x,y)
+            }
+        }
+    }
+
+    drawBoard() {       
+        for (let y = 0; y < this._boardList[0].length; y++) {            
+            for (let x = 0; x < this._boardList[1].length; x++) {
                 this.drawEmptyCase(x,y)
             }
         }
@@ -74,6 +81,19 @@ export class Board {
     drawObject(x,y) {
         const node = document.getElementById(`caseX${x}Y${y}`)
         node.style.backgroundColor = "red"
+    }
+
+    reset() {
+        this._boardList = [];
+        for (let i = 0; i < this._nbTileY; i++) {
+            const row = [];
+            for (let j = 0; j < this._nbTileX; j++) {
+                row.push(0);
+            }
+            this._boardList.push(row);
+        }
+        this.drawBoard(); 
+        this.addObject();
     }
 
 }
