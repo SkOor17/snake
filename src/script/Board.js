@@ -1,3 +1,4 @@
+import { Game } from "./Game.js";
 import { Snake } from "./Snake.js";
 
 export class Board {
@@ -17,6 +18,7 @@ export class Board {
             this._boardList.push(row);
         }
 
+        this._game = new Game(this);
         this._snake = new Snake(this);
     }
 

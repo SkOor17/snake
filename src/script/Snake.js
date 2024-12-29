@@ -16,7 +16,6 @@ export class Snake {
         this._boardList[this._snakeBody[1]["y"]][this._snakeBody[1]["x"]] = 1;
         this._boardList[this._snakeBody[2]["y"]][this._snakeBody[2]["x"]] = 1;
         this.drawSnake();
-        this.handleMovement();
     }
 
     getQueue() {        
@@ -40,28 +39,29 @@ export class Snake {
         }
     }
 
-    handleMovement() {
-        document.addEventListener(("keyup"), (event) => {
-            this._prevHead = { ...this._snakeBody[0] };
-            const x = this._snakeBody[0]["x"]
-            const y = this._snakeBody[0]["y"]
-            
-            switch (event.key) {
-                case "ArrowUp":
-                    this.moveSnake(0,-1)
-                    break;
-                case "ArrowDown":
-                    this.moveSnake(0,1)
-                    break;
-                case "ArrowLeft":
-                    this.moveSnake(-1,0)
-                    break;
-                case "ArrowRight":
-                    this.moveSnake(1,0)
-                    break;
-            }
-
-        })
+    handleMovement() {        
+        console.log(this._board._game._isPlaying);
+        
+        if (this._board._game._isPlaying) {
+            document.addEventListener(("keyup"), (event) => {
+                this._prevHead = { ...this._snakeBody[0] };
+                
+                switch (event.key) {
+                    case "ArrowUp":
+                        this.moveSnake(0,-1)
+                        break;
+                    case "ArrowDown":
+                        this.moveSnake(0,1)
+                        break;
+                    case "ArrowLeft":
+                        this.moveSnake(-1,0)
+                        break;
+                    case "ArrowRight":
+                        this.moveSnake(1,0)
+                        break;
+                }
+            })
+        }
     }
 
     updateSnakeBody() {
